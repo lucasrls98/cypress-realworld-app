@@ -2,7 +2,8 @@ import { source } from "lowdb/adapters/FileSync";
 import{
     getAllUsers,
     seedDatabase,
-    getBankAccountById
+    getBankAccountById,
+    createTransaction
 } from "../../backend/database";
 import { DefaultPrivacyLevel, TransactionStatus } from "../models";
 
@@ -16,16 +17,19 @@ describe("Envio de tranfesrências", ()=>{
         const usuarioDestino = getAllUsers()[2];
         const contaUsuarioDestino = getBankAccountById(usuarioOrigem.id)
 
-        const transacao = {
+        const transacaoPayload = {
             source: contaUsuarioDestino,
             amount:"100",
             senderid: usuarioOrigem.id,
             receiverId: usuarioDestino.id,
             description: "Pagamento Teste",
-            transactionType: "payment",
-            privacyLevel: DefaultPrivacyLevel.public,
-            status: TransactionStatus.pending
+            // transactionType: "payment",
+            // privacyLevel: DefaultPrivacyLevel.public,
+            // status: TransactionStatus.pending
         }
+        const transacao = createTransaction(usuarioOrigem.id, "payment", transacaoPayload)
+        expect(transacao.id).toBeDefined()
+        expect(transacao.status).toEqual("complete")
     })
 
     
